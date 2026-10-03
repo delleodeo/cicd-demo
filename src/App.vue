@@ -34,7 +34,7 @@ const count = ref(0)
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #0f172a;
+  background: #cae0d5;
   font-family: Arial, sans-serif;
 }
 
@@ -48,7 +48,7 @@ const count = ref(0)
 }
 
 .badge {
-  color: #38bdf8;
+  color: #c6dde7;
   font-weight: bold;
   letter-spacing: 2px;
 }
