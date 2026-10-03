@@ -41,7 +41,7 @@ describe('Launchpad dashboard', () => {
     jest.advanceTimersByTime(650 * 5)
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.get('.deploy-button').text()).toContain('Deploy latest')
+    expect(wrapper.get('.deploy-button').text()).toContain('Deploy latest sampe')
     expect(wrapper.get('.status-pill').text()).toContain('Deployment successful')
     expect(wrapper.get('.footer').text()).toContain('#129')
     expect(wrapper.findAll('.step-marker.complete')).toHaveLength(4)
