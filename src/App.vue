@@ -55,6 +55,7 @@ const count = ref(0)
 
 h1 {
   font-size: 36px;
+  color: transparent;
 }
 
 p {
