@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, ref } from 'vue'
 
 const isDeploying = ref(false)
+const isDarkMode = ref(localStorage.getItem('launchpad-theme') === 'dark')
 const deploymentNumber = ref(128)
 const completedSteps = ref(4)
 let deploymentTimer
@@ -15,6 +16,11 @@ const pipelineSteps = [
 
 const progress = computed(() => `${(completedSteps.value / pipelineSteps.length) * 100}%`)
 const statusLabel = computed(() => (isDeploying.value ? 'Deploying now' : 'Deployment successful'))
+
+function toggleTheme() {
+  isDarkMode.value = !isDarkMode.value
+  localStorage.setItem('launchpad-theme', isDarkMode.value ? 'dark' : 'light')
+}
 
 function startDeployment() {
   if (isDeploying.value) return
@@ -40,14 +46,24 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="app-shell">
+  <main class="app-shell" :class="{ dark: isDarkMode }">
     <nav class="topbar" aria-label="Main navigation">
       <a class="brand" href="/" aria-label="Launchpad home">
         <span class="brand-mark" aria-hidden="true">L</span>
-        <span>Launchpad</span>
+        <span>Launchpad Update</span>
       </a>
       <div class="topbar-meta">
         <span class="environment"><span class="environment-dot"></span>Production</span>
+        <button
+          class="theme-toggle"
+          type="button"
+          :aria-label="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+          :aria-pressed="isDarkMode"
+          :title="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+          @click="toggleTheme"
+        >
+          <span aria-hidden="true">{{ isDarkMode ? '☀' : '☾' }}</span>
+        </button>
         <span class="avatar" aria-label="Signed in as Alex Morgan">AM</span>
       </div>
     </nav>
@@ -155,7 +171,10 @@ onBeforeUnmount(() => {
 .brand-mark { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 9px; background: #6856e8; color: white; font-size: 18px; font-weight: 800; box-shadow: 0 5px 12px rgba(104, 86, 232, .25); }
 .topbar-meta, .environment { display: flex; align-items: center; gap: 17px; }
 .environment { gap: 8px; color: #566276; font-size: 13px; font-weight: 600; }
-.environment-dot, .online-dot { width: 7px; height: 7px; border-radius: 50%; background: #29b777; box-shadow: 0 0 0 3px #dff7ec; }
+.environment-dot, .online-dot { width: 7px; height: 7px; border-radius: 50%; background: #899690; box-shadow: 0 0 0 3px #dff7ec; }
+.theme-toggle { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid #e1e4ec; border-radius: 50%; background: #fff; color: #657187; cursor: pointer; font-size: 17px; line-height: 1; transition: background .2s, color .2s, transform .2s; }
+.theme-toggle:hover { background: #f0eeff; color: #5f4bda; transform: rotate(12deg); }
+.theme-toggle:focus-visible { outline: 3px solid #c7c0ff; outline-offset: 3px; }
 .avatar { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #e8e4ff; color: #5b4ad0; font-size: 11px; font-weight: 800; }
 .content { width: min(1120px, calc(100% - 48px)); margin: 0 auto; padding: 64px 0 28px; }
 .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 42px; }
@@ -192,6 +211,22 @@ h2 { margin-bottom: 0; color: #1c293b; font-size: 18px; letter-spacing: -.025em;
 .activity-list li { display: flex; align-items: center; gap: 10px; }.activity-check { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: #e7f8f0; color: #27a66e; font-size: 12px; font-weight: 800; }.activity-list strong, .commit-card strong { display: block; color: #314056; font-size: 12px; }.activity-list p, .commit-card p { margin: 3px 0 0; color: #909aaa; font-size: 10px; }.activity-list time { margin-left: auto; color: #a5adba; font-size: 10px; }
 .commit-card { display: flex; align-items: center; gap: 10px; padding: 13px; border: 1px solid #eceef3; border-radius: 9px; background: #fafbfc; }.commit-icon { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 6px; background: #eeecff; color: #6d5be4; font-family: monospace; font-size: 11px; font-weight: bold; }.commit-id { margin-left: auto; color: #a0a8b6; font-family: monospace; font-size: 10px; }
 .footer { display: flex; gap: 24px; margin-top: 26px; color: #99a2b0; font-size: 10px; }.footer span { display: inline-flex; align-items: center; gap: 8px; }.footer strong { color: #626e80; font-weight: 700; }
+.app-shell.dark { background: radial-gradient(circle at 82% -10%, #292449 0, transparent 38%), #111522; color: #e8ebf4; }
+.dark .topbar { background: rgba(21, 25, 39, .88); border-color: #292f42; }
+.dark .brand, .dark h1, .dark h2, .dark .stat-card strong, .dark .step-title, .dark .activity-list strong, .dark .commit-card strong { color: #edf0f8; }
+.dark .environment { color: #b5bfd1; }
+.dark .theme-toggle { border-color: #3a4258; background: #252b3c; color: #f4c85c; }
+.dark .theme-toggle:hover { background: #30384e; color: #ffe08b; }
+.dark .hero-copy, .dark .stat-heading, .dark .step-content p, .dark .activity-list p, .dark .commit-card p { color: #9ca7bb; }
+.dark .stat-card, .dark .panel { border-color: #2c3347; background: rgba(25, 30, 46, .92); box-shadow: 0 8px 30px rgba(0, 0, 0, .14); }
+.dark .stat-caption, .dark .step-title span, .dark .activity-list time, .dark .commit-id, .dark .footer { color: #7f8ba2; }
+.dark .progress-track { background: #30374a; }
+.dark .step-marker { border-color: #3a4255; background: #202638; color: #8894a9; }
+.dark .step-marker.complete { border-color: #6d5be4; background: #6d5be4; color: white; }
+.dark .step-marker.current { border-color: #ea9a4a; background: #252a38; }
+.dark .commit-card { border-color: #30374a; background: #1c2233; }
+.dark .text-button { color: #a59aff; }
+.dark .footer strong { color: #aeb7c8; }
 @media (max-width: 760px) { .content { padding-top: 42px; }.hero { align-items: flex-start; flex-direction: column; margin-bottom: 30px; }.deploy-button { width: 100%; justify-content: center; }.stats-grid, .dashboard-grid { grid-template-columns: 1fr; }.pipeline-panel { min-width: 0; }.footer { flex-wrap: wrap; gap: 12px 20px; } }
 @media (max-width: 480px) { .topbar { padding: 0 18px; }.environment { display: none; }.content { width: min(100% - 32px, 1120px); }.panel { padding: 20px 17px; }.pipeline { gap: 4px; }.step-title { display: block; }.step-title span { display: block; margin-top: 3px; }.stat-card { padding: 17px; } }
 </style>
